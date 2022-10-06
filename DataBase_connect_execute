@@ -1,0 +1,38 @@
+import sys
+
+sys.path.append("/absolute/module/path")
+# PATH is used to access the sql file
+from pathlib import Path
+
+# pyodbc is used to open the file which contains the credentials
+import pyodbc
+
+credentials_file = open(r"C:\Users\Martin_Marinov\Desktop\python\input.dat")
+# creating a list to store and access our credentials
+list_of_credentials = []
+
+query = Path(r"C:\Users\Martin_Marinov\Desktop\python\query.sql").read_text()
+
+
+# function read_table contains pyodbc.connect feature to connect to the local database
+def read_table():
+    # for loop is used to assign the attributes to a list
+    for line in credentials_file:
+        stripped_line = line.strip()
+        list_of_credentials.append(stripped_line)
+
+    server = str(list_of_credentials[0])
+    database = str(list_of_credentials[1])
+    # conn variable reads the parameters to access the DB
+    conn = pyodbc.connect('Driver={SQL Server Native Client 11.0};'
+                          f'Server={server};'
+                          f'Database={database};'
+                          'Trusted_Connection=yes;')
+
+    cursor = conn.cursor()
+    cursor.execute(query)
+    # for loop to print the query by accessing cursor
+    for i in cursor:
+        print(i)
+
+read_table()
